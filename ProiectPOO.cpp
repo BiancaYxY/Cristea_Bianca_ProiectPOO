@@ -115,6 +115,56 @@ public:
 	}
 	//apelare functie prieten
 	friend void afisareJucatoriFriend(Jucator j1);
+
+	//supraincarcare operator = 
+	Jucator& operator=(const Jucator& j1) {
+		if (this != &j1) {
+			this->nume = j1.nume;
+			this->salariu = j1.salariu;
+			if (this->nrTricou != NULL) {
+				delete[]this->nrTricou;
+			}
+			this->nrTricou = new int[this->nrJucatori];
+
+			for (int i = 0;i < j1.nrJucatori;i++) {
+				this->nrTricou[i] = j1.nrTricou[i];
+			}
+		}
+
+			return *this;
+		}
+
+		//supraincarcare operator >>
+		 friend istream& operator>>(istream& citire, Jucator& j) {
+			 cout << "Nume jucator: "; citire >> j.nume;
+			cout << "Salariu jucator: "; citire >> j.salariu; 
+			if (j.nrTricou != NULL) {
+				delete[]j.nrTricou;
+			}
+			j.nrTricou = new int[j.nrJucatori];
+			cout << "Nr de pe tricouri jucatori:"; 
+			for (int i = 0;i < j.nrJucatori;i++) {
+				citire >> j.nrTricou[i];
+			}
+			return citire;
+	     }
+
+		 //supraincarcare operator <<
+		 friend ostream& operator<<(ostream& cons, const Jucator& j) {
+			 cout << "Nume jucator: " << j.nume << "\nVarsta minima: " << j.varstaMinima <<
+				 "\nNr jucatori: " << j.nrJucatori << "\nSalariu: " << j.salariu << "\n Numere de pe tricou: ";
+			 for (int i = 0;i < j.nrJucatori;i++) {
+				 cout << j.nrTricou[i] << " ";
+			 }
+			 cout << endl << endl;
+			 return cons;
+		 }
+
+		 //supraincarcare preincrementare
+		  Jucator operator++() {
+			 this->salariu += 1000;
+			 return *this;
+		 }
 };
 
 int Jucator::varstaMinima = 18;
@@ -208,11 +258,6 @@ public:
 	}
 
 	//Setters
-	/*string locatie;
-	float lungime, latime;
-	int* tabelaScor;
-	const int nrCosuri;
-	static int inaltimeInel*/
 	void setlocatie(string locatieS) {
 		if (locatieS != " ") {
 			this->locatie = locatieS;
@@ -251,6 +296,59 @@ public:
 		cout << endl << endl;
 	}
 	friend void afisareTerenFriend(Teren t1);
+
+	//supraincarcare operator=
+	Teren& operator=(const Teren& t) {
+		if (this!= &t) {
+			this->locatie = t.locatie;
+			this->latime = t.latime;
+			this->lungime = t.lungime;
+			if (this->tabelaScor != NULL) {
+				delete[]this->tabelaScor;
+			}
+			this->tabelaScor = new int[2];
+			for (int i = 0;i < 2;i++) {
+				this->tabelaScor[i] = t.tabelaScor[i];
+			}
+		}
+		return *this;
+	}
+
+	//supraincarcare operator>>
+	friend istream& operator>>(istream& citire, Teren& t) {
+		cout << "Locatie teren:"; citire >> t.locatie;
+		cout << "Lungime teren:"; citire >> t.lungime;
+		cout << "Latime teren:"; citire >> t.latime;
+		cout << "Scor:";
+		if (t.tabelaScor != NULL) {
+			delete[]t.tabelaScor;
+		}
+		t.tabelaScor = new int[2];
+		for (int i = 0;i < 2;i++) {
+			citire>>t.tabelaScor[i];
+		}
+		cout << endl;
+		return citire;
+	}
+
+	//supraincarcare operator<<
+	friend ostream& operator<<(ostream& cons, Teren& t) {
+		cout << "Locatie: " << t.locatie << "\nLungime: " << t.lungime <<
+			"\nLatime: " << t.latime << "\nNr cosuri: " << t.nrCosuri << "\nInaltime inel: "
+			<< t.inaltimeInel << endl << "\n Scor:" << t.tabelaScor[0] << " - " << t.tabelaScor[1];
+		cout << endl << endl;
+		return cons;
+	}
+
+	//supraincarcare operator++
+	Teren operator++() {
+		Teren aux;
+		aux = *this;
+		this->lungime += 100;
+		this->latime += 50;
+		return *this;
+	}
+
 };
 
 void afisareTerenFriend(Teren t1) {
@@ -345,6 +443,45 @@ public:
 		}
 	}
 
+	//supraincarcare operator=
+	Minge& operator=(const Minge& m) {
+		if (&m != this) {
+			this->producator = m.producator;
+			if (this->gradUzare != NULL) {
+				delete[]this->gradUzare;
+			}
+			this->gradUzare = new char[strlen(m.gradUzare) + 1];
+			strcpy_s(this->gradUzare, strlen(m.gradUzare) + 1, m.gradUzare);
+		}
+		return *this;
+	}
+
+	//supraincarcare operator>>
+	friend istream& operator>>(istream& citire, Minge& m) {
+		cout << "Producator:"; citire >> m.producator;
+		if (m.gradUzare != NULL) {
+			delete[]m.gradUzare;
+		}
+		m.gradUzare = new char[9];
+		citire >> m.gradUzare;
+		return citire;
+	}
+
+	//supraincarcare operator<<
+	friend ostream& operator<<(ostream& cons, Minge& m) {
+		cout << "Producator: " << m.producator << "\nGrad uzare: " << m.gradUzare <<
+			"\nNr mingi rezerva: " << m.nrMingiRezerva << "\nDimensiune: " << m.dimensiune << endl << endl;
+		return cons;
+	}
+
+	//supraincarcare operator++
+	Minge operator++() {
+		Minge aux=*this;
+		this->producator="necunoscut";
+		return *this;
+	}
+
+
 };
 
 int Minge::dimensiune = 7;
@@ -432,5 +569,32 @@ void main() {
 	cout << "Dimensiune: " << m5.getdimensiune() << endl;
 	cout << "Nr mingi rezerva: " << m5.getnrMingiRezerva() << endl;
 	
+	//supraincarcare operatori Jucator
+	cout << "OPERATORI JUCATOR\n";
+	j1 = j3; 
+	j1.afisareJucator();
+	Jucator j6;
+	cin >> j6;
+	cout << j6;
+	++j6;
+	cout << j6;
 
+	//supraincarcare operatori Teren
+	cout << "OPERATORI TEREN\n";
+	t1 = t2;
+	Teren t6;
+	cin >> t6;
+	cout << t6;
+	++t6;
+	cout << t6;
+
+	//supraincarcae operatori Minge
+	cout << "OPERATORI MINGE\n";
+	m1 = m2;
+	cout << m1;
+	Minge m6;
+	cin >> m6;
+	cout << m6;
+	++m6;
+	cout << m6;
 }
