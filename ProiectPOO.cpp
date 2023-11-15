@@ -463,6 +463,7 @@ public:
 			delete[]m.gradUzare;
 		}
 		m.gradUzare = new char[9];
+		cout << "Grad Uzare:";
 		citire >> m.gradUzare;
 		return citire;
 	}
@@ -597,4 +598,51 @@ void main() {
 	cout << m6;
 	++m6;
 	cout << m6;
+
+	//Vector de obiecte Jucator
+	Jucator vectorJ[3];
+	for (int i = 0;i < 3;i++) {
+		cin >> vectorJ[i];
+	}
+	cout << endl;
+	for (int i = 0;i < 3;i++) {
+		cout << vectorJ[i] << endl;
+	}
+
+	//Vector de obiecte Teren
+	Teren vectorT[3];
+	for (int i = 0;i < 3;i++) {
+		cin >> vectorT[i];
+	}
+	cout << endl;
+	for (int i = 0;i < 3;i++) {
+		cout << vectorT[i] << endl;
+	}
+
+	//Vector de obiecte Minge
+	Minge vectorM[3];
+	for (int i = 0;i < 3;i++) {
+		cin >> vectorM[i];
+	}
+	cout << endl;
+	for (int i = 0;i < 3;i++) {
+		cout << vectorM[i] << endl;
+	}
+
+	Jucator matriceJ[2][2];
+	for (int i = 0;i < 2;i++) {
+		for (int j = 0;j < 2;j++) {
+			cin >> matriceJ[i][j];
+		}
+	}
+
+	for (int i = 0;i < 2;i++) {
+		for (int j = 0;j < 2;j++) {
+			cout << matriceJ[i][j];
+			if (j == 1)
+				cout << "--------";
+		}
+		cout << endl;
+	}
+	
 }
