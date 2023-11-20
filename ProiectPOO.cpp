@@ -485,6 +485,108 @@ public:
 
 };
 
+//clasa cu relatie has a
+class Liga {
+private:
+	Jucator j;
+	int nrMeciuri;
+	int nrEchipe;
+	string numeLiga;
+
+public:
+	//constructor default
+	Liga() {
+		this->j.setnume( "Steph Curry");
+		this->j.setsalariu(666.77);
+		int* nrTricouLiga;
+		nrTricouLiga = new int[this->j.getnrJucatori()];
+		for (int i = 0;i < this->j.getnrJucatori(); i++) {
+			nrTricouLiga[i] = 30 + i;
+		}
+		this->j.setnrTricou(nrTricouLiga);
+		this->nrMeciuri = 82;
+		this->nrEchipe = 20;
+		this->numeLiga = "NBA";
+	}
+	//destructor
+	~Liga() {
+
+	}
+
+	//afisare liga
+	void afisareLiga() {
+		cout << "Nume jucator: " << this->j.getnume() << "\nVarsta minima: " << this->j.getvarstaMinima() <<
+			"\nNr jucatori: " << this->j.getnrJucatori() << "\nSalariu: " << this->j.getsalariu() << "\n Numere de pe tricou: ";
+		for (int i = 0;i < this->j.getnrJucatori() - 1;i++) {
+			cout << this->j.getnrTricou()[i] << " ";
+		}
+		cout << endl <<"Nr meciuri:" <<this->nrMeciuri<<"\nNr echipe liga:" << this->nrEchipe << "\nNume liga:" << this->numeLiga;
+		cout << endl << endl;
+	}
+
+	//getters
+	int getNrMeciuri() {
+		return this->nrMeciuri;
+	}
+
+	int getNrEchipe() {
+		return this->nrEchipe;
+	}
+
+	string getNumeLiga() {
+		return this->numeLiga;
+	}
+
+	//setters
+	void setNrMeciuri(int nrMeciuriS) {
+		this->nrMeciuri = nrMeciuriS;
+	}
+
+	void setNrEchipe(int nrEchipeS) {
+		this->nrEchipe = nrEchipeS;
+	}
+
+	void setNumeLiga(string numeLigaS) {
+		this->numeLiga = numeLigaS;
+	}
+
+	//supraincarcare <<
+	friend ostream& operator<<(ostream& out,Liga& l) {
+		out << "Nume jucator: " << l.j.getnume() << "\nVarsta minima: " << l.j.getvarstaMinima() <<
+			"\nNr jucatori: " << l.j.getnrJucatori() << "\nSalariu: " << l.j.getsalariu() << "\n Numere de pe tricou: ";
+		for (int i = 0;i < l.j.getnrJucatori() - 1;i++) {
+			cout << l.j.getnrTricou()[i] << " ";
+		}
+		cout << endl << "Nr meciuri:" << l.nrMeciuri << "\nNr echipe liga:" << l.nrEchipe << "\nNume liga:" << l.numeLiga;
+		cout << endl << endl;
+		return out;
+	}
+	
+	//supraincarcare []
+	int operator[](int i) {
+		return this->j.getnrTricou()[i];
+	}
+
+	//supraincarcare =
+	Liga operator=(Liga& l) {
+		if (this != &l) {
+			this->j.setnume(l.j.getnume());
+			this->j.setsalariu(l.j.getsalariu());
+			if (this->j.getnrTricou() != NULL) {
+				delete[]this->j.getnrTricou();
+			}
+
+			for (int i = 0;i < this->j.getnrJucatori(); i++) {
+				this->j.getnrTricou()[i] = l.j.getnrTricou()[i];
+			}
+			this->j.setnrTricou(l.j.getnrTricou());
+			this->nrMeciuri = l.nrMeciuri;
+			this->nrEchipe = l.nrEchipe;
+			this->numeLiga = l.numeLiga;
+		}
+		return *this;
+	}
+};
 int Minge::dimensiune = 7;
 
 
@@ -645,4 +747,13 @@ void main() {
 		cout << endl;
 	}
 	
+	//implementare Liga
+	Liga l;
+	l.afisareLiga();
+	//supraincarcare << si []
+	cout << "Nr tricoului jucatorului 3:" << l[2];
+	//supraincarcare =
+	Liga l2 = l;
+	cout << l2;
+
 }
