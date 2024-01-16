@@ -1,4 +1,5 @@
 #include<iostream>
+#include <fstream>
 
 using namespace std;
 //domeniu: BASCHET
@@ -165,10 +166,59 @@ public:
 			 this->salariu += 1000;
 			 return *this;
 		 }
+
+		  //supraincarcare << pentru afisare in fisier
+		  friend ofstream& operator<<(ofstream& cons, const Jucator& j) {
+			  cons <<  j.nume <<endl <<j.varstaMinima <<endl << j.nrJucatori << endl << j.salariu <<endl;
+			  for (int i = 0;i < j.nrJucatori;i++) {
+				  cons << j.nrTricou[i] << " ";
+			  }
+			  cons << endl;
+			  return cons;
+		  }
+		  
 };
 
 int Jucator::varstaMinima = 18;
 
+
+class JucatorCoordonator :public Jucator {
+protected:
+	string sponsor;
+	float inaltime;
+	int vechime;//in ani
+public:
+	JucatorCoordonator() :Jucator() {
+		this->sponsor = "Nike";
+		this->inaltime = 1.95;
+		this->vechime = 5;
+	}
+	JucatorCoordonator(string sponsorP, float inaltimeP, int vechimeP) :Jucator() {
+		this->sponsor = sponsorP;
+		this->inaltime = inaltimeP;
+		this->vechime = vechimeP;
+	}
+
+	JucatorCoordonator operator=(const JucatorCoordonator& jc) {
+		if (&jc != this) {
+			this->sponsor = jc.sponsor;
+			this->inaltime = jc.inaltime;
+			this->vechime = jc.vechime;
+		}
+		return *this;
+	}
+	friend ostream& operator<<(ostream& cons, JucatorCoordonator& jc) {
+		cout << "Nume jucator: " << jc.getnume() << "\nVarsta minima: " << jc.getvarstaMinima() <<
+			"\nNr jucatori: " << jc.getnrJucatori() << "\nSalariu: " << jc.getsalariu() << "\n Numere de pe tricou: ";
+		for (int i = 0;i < jc.getnrJucatori();i++) {
+			cout << jc.getnrTricou()[i] << " ";
+		}
+		cout << endl << "Sponsorul Jucatorului coordonator:" << jc.sponsor << "\nInaltimea Jucatorului coordonator:" << jc.inaltime <<
+			"\n Vechimea Jucatorului coordonator:" << jc.vechime;
+
+		return cons;
+	}
+};
 void afisareJucatoriFriend(Jucator j1) {
 	cout << "Nume jucator: " << j1.nume << "\nVarsta minima: " << j1.varstaMinima <<
 		"\nNr jucatori: " << j1.nrJucatori << "\nSalariu: " << j1.salariu << "\n Numere de pe tricou: ";
@@ -351,6 +401,99 @@ public:
 
 };
 
+
+class TerenEuropean :public Teren {
+protected:
+	int nrLocuriTribuna;
+	string numeTeren;
+	float suprafata;
+public:
+	TerenEuropean() : Teren() {
+		this->nrLocuriTribuna = 5000;
+		this->numeTeren = "BTarena";
+		this->suprafata = 10000.23;
+	}
+
+	TerenEuropean operator=(const TerenEuropean& te) {
+		if (&te != this) {
+			this->nrLocuriTribuna = te.nrLocuriTribuna;
+			this->numeTeren = te.numeTeren;
+			this->suprafata = te.suprafata;
+		}
+		return *this;
+	}
+
+	friend ostream& operator<<(ostream& cons, TerenEuropean& te) {
+		cout << "Locatie: " << te.getlocatie() << "\nLungime: " << te.getlungime() <<
+			"\nLatime: " << te.getlatime() << "\nNr cosuri: " << te.getnrCosuri() << "\nInaltime inel: "
+			<< te.getinaltimeInel() << endl << "\n Scor:" << te.gettabelaScor()[0] << " - " << te.gettabelaScor()[1];
+		cout << endl << endl;
+
+
+		//cout << endl << "Nr meciuri:" << te.getNrMeciuri()<< "\nNr echipe liga:" << te.getNrEchipe() << "\nNume liga:" << te.getNumeLiga();
+		cout << endl << endl;
+
+		cout << "Nr locuri tribunaL" << te.nrLocuriTribuna << "\nnumeTeren" << te.numeTeren <<
+			"\nSuprafata:" << te.suprafata;
+		return cons;
+	}
+};
+int Teren::inaltimeInel = 3;
+
+//scriere in fisier binar-obiecte de tip Teren
+void scriereBinarTeren() {
+	Teren t;
+	string locatie=t.getlocatie();
+	int lengthLocatie = locatie.length();
+	float lungime = t.getlungime();
+	float latime = t.getlatime();
+	int* tabelaScor;
+	tabelaScor = new int[2];
+	for (int i = 0;i < 2;i++) {
+		tabelaScor[i] = t.gettabelaScor()[i];
+	}
+	fstream fisierBinarTeren("fBinarTeren.bin", ios::binary | ios::out);
+	fisierBinarTeren.write((char*)&locatie, sizeof(int));
+	fisierBinarTeren.write((char*)&lungime, sizeof(float));
+	fisierBinarTeren.write((char*)&latime, sizeof(float));
+	for (int i = 0;i < 2;i++) {
+		fisierBinarTeren.write((char*)&tabelaScor[i], sizeof(int));
+	}
+
+	fisierBinarTeren.close();
+	delete[] tabelaScor;
+	}
+
+//citire din fisier binar-obiecte de tip Teren
+void citireBinarTeren() {
+	Teren t;
+	string locatie = t.getlocatie();
+	int lengthLocatie = locatie.length();
+	float lungime = t.getlungime();
+	float latime = t.getlatime();
+	int* tabelaScor;
+	tabelaScor = new int[2];
+	for (int i = 0;i < 2;i++) {
+		tabelaScor[i] = t.gettabelaScor()[i];
+	}
+	fstream fisierBinarTeren("fBinarTeren.bin", ios::binary | ios::out);
+	fisierBinarTeren.read((char*)&locatie, sizeof(int));
+	fisierBinarTeren.read((char*)&lungime, sizeof(float));
+	fisierBinarTeren.read((char*)&latime, sizeof(float));
+	for (int i = 0;i < 2;i++) {
+		fisierBinarTeren.read((char*)&tabelaScor[i], sizeof(int));
+	}
+
+	cout << "Locatie teren:" << locatie << "\nLungime teren:" << lungime <<
+		"\nLatime teren:" << latime<<"\nScor:";
+	for (int i = 0;i < 2;i++) {
+		cout << tabelaScor[i] << " ";
+	}
+	fisierBinarTeren.close();
+	delete[] tabelaScor;
+
+}
+
 void afisareTerenFriend(Teren t1) {
 		cout << "Locatie: " << t1.locatie << "\nLungime: " << t1.lungime <<
 			"\nLatime: " << t1.latime << "\nNr cosuri: " << t1.nrCosuri << "\nInaltime inel: "
@@ -358,7 +501,6 @@ void afisareTerenFriend(Teren t1) {
 		cout << endl << endl;
 }
 
-int Teren::inaltimeInel = 3;
 
 class Minge {
 private:
@@ -469,12 +611,17 @@ public:
 	}
 
 	//supraincarcare operator<<
-	friend ostream& operator<<(ostream& cons, Minge& m) {
+	friend ostream& operator<<(ostream& cons, const Minge& m) {
 		cout << "Producator: " << m.producator << "\nGrad uzare: " << m.gradUzare <<
 			"\nNr mingi rezerva: " << m.nrMingiRezerva << "\nDimensiune: " << m.dimensiune << endl << endl;
 		return cons;
 	}
-
+	
+	//supraincarcare operator<< pentru citire din fisier
+	friend ofstream& operator<<(ofstream& cons, Minge& m) {
+		cout << m.producator << m.gradUzare << m.nrMingiRezerva << m.dimensiune << endl << endl;
+		return cons;
+	}
 	//supraincarcare operator++
 	Minge operator++() {
 		Minge aux=*this;
@@ -484,6 +631,8 @@ public:
 
 
 };
+
+int Minge::dimensiune = 7;
 
 //clasa cu relatie has a
 class Liga {
@@ -536,6 +685,23 @@ public:
 	string getNumeLiga() {
 		return this->numeLiga;
 	}
+	string getNumeJucator() {
+		return this->j.getnume();
+	}
+	int getvarstaMinima() {
+		return this->j.getvarstaMinima();
+	}
+	const int getnrJucatori() {
+		return this->j.getnrJucatori();
+	}
+	float getsalariu() {
+		return this->j.getsalariu();
+	}
+	int* getnrTricou() {
+		return this->j.getnrTricou();
+	}
+	
+	
 
 	//setters
 	void setNrMeciuri(int nrMeciuriS) {
@@ -570,15 +736,7 @@ public:
 	//supraincarcare =
 	Liga operator=(Liga& l) {
 		if (this != &l) {
-			this->j.setnume(l.j.getnume());
-			this->j.setsalariu(l.j.getsalariu());
-			if (this->j.getnrTricou() != NULL) {
-				delete[]this->j.getnrTricou();
-			}
-
-			for (int i = 0;i < this->j.getnrJucatori(); i++) {
-				this->j.getnrTricou()[i] = l.j.getnrTricou()[i];
-			}
+			this->j = l.j;
 			this->j.setnrTricou(l.j.getnrTricou());
 			this->nrMeciuri = l.nrMeciuri;
 			this->nrEchipe = l.nrEchipe;
@@ -587,173 +745,237 @@ public:
 		return *this;
 	}
 };
-int Minge::dimensiune = 7;
 
+//scriere in fisier binar obiecte de tip Liga
+void fisierBinarLiga() {
+	Liga l;
+	
+	int nrMeciuri=l.getNrMeciuri();
+	int nrEchipe=l.getNrEchipe();
+	string numeLiga=l.getNumeLiga();
+	string numeJucator = l.getNumeJucator();
+	static int varstaMinima = l.getvarstaMinima();
+	const int nrJucatori = l.getnrJucatori();
+	float salariu = l.getsalariu();
+	int* nrTricou = new int[nrJucatori];
+	for (int i = 0;i < nrJucatori;i++) {
+		nrTricou[i] = l.getnrTricou()[i];
+	}
+
+	fstream fBinarLiga("fisierBinarLiga.bin", ios::binary | ios::out);
+	fBinarLiga.write((char*)&nrMeciuri, sizeof(int));
+	fBinarLiga.write((char*)&nrEchipe, sizeof(int));
+	fBinarLiga.write((char*)&numeLiga, sizeof(string));
+	fBinarLiga.write((char*)&numeJucator, sizeof(string));
+	fBinarLiga.write((char*)&varstaMinima, sizeof(int));
+	fBinarLiga.write((char*)&nrJucatori, sizeof(int));
+	fBinarLiga.write((char*)&salariu, sizeof(float));
+	for (int i = 0;i < nrJucatori;i++) {
+		fBinarLiga.write((char*)&nrTricou[i], sizeof(int));
+	}
+	fBinarLiga.close();
+	delete[] nrTricou;
+
+}
 
 
 void main() {
-	Jucator j1; //default constructor
-	int* nrTricou = new int[5];
-	for (int i = 0;i < 5;i++)
-		nrTricou[i] = i * i;
-	Jucator j2("Adrian Popescu", 2000, nrTricou, 5); //constructor cu toti parametrii
-	Jucator j3(nrTricou); //constructor cu 1 parametru
-	Jucator j4(j3); //copy constructor
-	j1.afisareJucator();
-	j2.afisareJucator();
-	j3.afisareJucator();
-	j4.afisareJucator();
+	//Jucator j1; //default constructor
+	//int* nrTricou = new int[5];
+	//for (int i = 0;i < 5;i++)
+	//	nrTricou[i] = i * i;
+	//Jucator j2("Adrian Popescu", 2000, nrTricou, 5); //constructor cu toti parametrii
+	//Jucator j3(nrTricou); //constructor cu 1 parametru
+	//Jucator j4(j3); //copy constructor
+	//j1.afisareJucator();
+	//j2.afisareJucator();
+	//j3.afisareJucator();
+	//j4.afisareJucator();
 
-	//Setters Jucator
-	Jucator j5;
-	j5.setnume("Lebron James");
-	j5.setsalariu(100000);
-	j5.setnrTricou(nrTricou);
+	////Setters Jucator
+	//Jucator j5;
+	//j5.setnume("Lebron James");
+	//j5.setsalariu(100000);
+	//j5.setnrTricou(nrTricou);
 
-	//Getters Jucator
-	cout << "Nume jucator: " << j5.getnume() << endl;
-	cout << "Nr jucatori: " << j5.getnrJucatori() << endl;
-	cout << "Nr de pe tricouri: ";
+	////Getters Jucator
+	//cout << "Nume jucator: " << j5.getnume() << endl;
+	//cout << "Nr jucatori: " << j5.getnrJucatori() << endl;
+	//cout << "Nr de pe tricouri: ";
 
 
-	for (int i = 0;i < j5.getnrJucatori();i++) {
-	cout<< j5.getnrTricou()[i] <<" ";
-	}
-	cout << endl;
-	cout << "Salariu jucator: " << j5.getsalariu() << endl;
-	cout << "Varsta minima: " << j5.getvarstaMinima() << endl;
+	//for (int i = 0;i < j5.getnrJucatori();i++) {
+	//cout<< j5.getnrTricou()[i] <<" ";
+	//}
+	//cout << endl;
+	//cout << "Salariu jucator: " << j5.getsalariu() << endl;
+	//cout << "Varsta minima: " << j5.getvarstaMinima() << endl;
 
-	Teren t1;
-	int* tabelaScor = new int[2];
-	for (int i = 0;i <= 1;i++)
-		tabelaScor[i] = 30 + i;
-	Teren t2("Cluj-Napoca", 80.9, 23, tabelaScor, 2);
-	Teren t3(tabelaScor);
-	Teren t4(t3);
-	t1.afisareTeren();
-	t2.afisareTeren();
-	t3.afisareTeren();
-	t4.afisareTeren();
+	//Teren t1;
+	//int* tabelaScor = new int[2];
+	//for (int i = 0;i <= 1;i++)
+	//	tabelaScor[i] = 30 + i;
+	//Teren t2("Cluj-Napoca", 80.9, 23, tabelaScor, 2);
+	//Teren t3(tabelaScor);
+	//Teren t4(t3);
+	//t1.afisareTeren();
+	//t2.afisareTeren();
+	//t3.afisareTeren();
+	//t4.afisareTeren();
 
-	//Setters Teren
-	Teren t5;
-	t5.setlatime(20);
-	t5.setlungime(70);
-	t5.setlocatie("Timisioara");
-	t5.settabelaScor(tabelaScor);
+	////Setters Teren
+	//Teren t5;
+	//t5.setlatime(20);
+	//t5.setlungime(70);
+	//t5.setlocatie("Timisioara");
+	//t5.settabelaScor(tabelaScor);
 
-	//Getters Teren
-	cout << "Locatie: " << t5.getlocatie() << endl;
-	cout << "Latime teren: " << t5.getlatime() << endl;
-	cout << "Lungime teren: " << t5.getlungime() << endl;
-	cout << "Scor: "<<t5.gettabelaScor()[0]<<"  "<< t5.gettabelaScor()[1]<<endl;
-	cout << "Nr cosuri:" << t5.getnrCosuri()<<endl;
-	cout << "Inaltime inel: " << t5.getinaltimeInel()<<endl;
+	////Getters Teren
+	//cout << "Locatie: " << t5.getlocatie() << endl;
+	//cout << "Latime teren: " << t5.getlatime() << endl;
+	//cout << "Lungime teren: " << t5.getlungime() << endl;
+	//cout << "Scor: "<<t5.gettabelaScor()[0]<<"  "<< t5.gettabelaScor()[1]<<endl;
+	//cout << "Nr cosuri:" << t5.getnrCosuri()<<endl;
+	//cout << "Inaltime inel: " << t5.getinaltimeInel()<<endl;
 
+	//
+	//
+	//Minge m1;
+	//Minge m2("Molten", "Uzat", 10);
+	//Minge m3("Moderat");
+	//Minge m4(m3);
+	//m1.afisareMinge();
+	//m2.afisareMinge();
+	//m3.afisareMinge();
+	//m4.afisareMinge();
+	//
+	////Setters
+	//Minge m5;
+	//m5.setgradUzare("Degradat");
+	//m5.setproducator("Decathlon");
+
+	////Getters
+	//cout << "Producator: " << m5.getproducator() << endl;
+	//cout << "Grad Uzare: " << m5.getgradUzare() << endl;
+	//cout << "Dimensiune: " << m5.getdimensiune() << endl;
+	//cout << "Nr mingi rezerva: " << m5.getnrMingiRezerva() << endl;
+	//
+	////supraincarcare operatori Jucator
+	//cout << "OPERATORI JUCATOR\n";
+	//j1 = j3; 
+	//j1.afisareJucator();
+	//Jucator j6;
+	//cin >> j6;
+	//cout << j6;
+	//++j6;
+	//cout << j6;
+
+	////supraincarcare operatori Teren
+	//cout << "OPERATORI TEREN\n";
+	//t1 = t2;
+	//Teren t6;
+	//cin >> t6;
+	//cout << t6;
+	//++t6;
+	//cout << t6;
+
+	////supraincarcae operatori Minge
+	//cout << "OPERATORI MINGE\n";
+	//m1 = m2;
+	//cout << m1;
+	//Minge m6;
+	//cin >> m6;
+	//cout << m6;
+	//++m6;
+	//cout << m6;
+
+	////Vector de obiecte Jucator
+	//Jucator vectorJ[3];
+	//for (int i = 0;i < 3;i++) {
+	//	cin >> vectorJ[i];
+	//}
+	//cout << endl;
+	//for (int i = 0;i < 3;i++) {
+	//	cout << vectorJ[i] << endl;
+	//}
+
+	////Vector de obiecte Teren
+	//Teren vectorT[3];
+	//for (int i = 0;i < 3;i++) {
+	//	cin >> vectorT[i];
+	//}
+	//cout << endl;
+	//for (int i = 0;i < 3;i++) {
+	//	cout << vectorT[i] << endl;
+	//}
+
+	////Vector de obiecte Minge
+	//Minge vectorM[3];
+	//for (int i = 0;i < 3;i++) {
+	//	cin >> vectorM[i];
+	//}
+	//cout << endl;
+	//for (int i = 0;i < 3;i++) {
+	//	cout << vectorM[i] << endl;
+	//}
+
+	//Jucator matriceJ[2][2];
+	//for (int i = 0;i < 2;i++) {
+	//	for (int j = 0;j < 2;j++) {
+	//		cin >> matriceJ[i][j];
+	//	}
+	//}
+
+	//for (int i = 0;i < 2;i++) {
+	//	for (int j = 0;j < 2;j++) {
+	//		cout << matriceJ[i][j];
+	//		if (j == 1)
+	//			cout << "--------";
+	//	}
+	//	cout << endl;
+	//}
+	//
+	////implementare Liga
+	//Liga l;
+	//l.afisareLiga();
+	////supraincarcare << si []
+	//cout << "Nr tricoului jucatorului 3:" << l[2];
+	////supraincarcare =
+	//Liga l2 = l;
+	//cout << l2;
+
+
+	////scriere in fisier text-clasa Jucator
+	//Jucator j7;
+	//ofstream fTextJucator("fisierTextJucator.txt", ios::out);
+	//fTextJucator << j7;
+	//fTextJucator.close();
+
+	////citire si scriere in fisier binar-clasa Teren
+	//Teren t7;
+	//scriereBinarTeren();
+	//citireBinarTeren();
+
+	////scriere si citire fisier text-clasa Minge
+	//Minge m7;
+	//ofstream fTextMinge("fisierTextMinge.txt", ios::out);
+	//fTextMinge << m7;
+	//fTextMinge.close();
 	
-	
-	Minge m1;
-	Minge m2("Molten", "Uzat", 10);
-	Minge m3("Moderat");
-	Minge m4(m3);
-	m1.afisareMinge();
-	m2.afisareMinge();
-	m3.afisareMinge();
-	m4.afisareMinge();
-	
-	//Setters
-	Minge m5;
-	m5.setgradUzare("Degradat");
-	m5.setproducator("Decathlon");
+	////scriere in fisier binar-clasa Liga
+	//fisierBinarLiga();
 
-	//Getters
-	cout << "Producator: " << m5.getproducator() << endl;
-	cout << "Grad Uzare: " << m5.getgradUzare() << endl;
-	cout << "Dimensiune: " << m5.getdimensiune() << endl;
-	cout << "Nr mingi rezerva: " << m5.getnrMingiRezerva() << endl;
-	
-	//supraincarcare operatori Jucator
-	cout << "OPERATORI JUCATOR\n";
-	j1 = j3; 
-	j1.afisareJucator();
-	Jucator j6;
-	cin >> j6;
-	cout << j6;
-	++j6;
-	cout << j6;
+	////implementare clasa JucatorCoordonator care mosteneste clasa Jucator
+	//JucatorCoordonator jc1("adidas", 1.83, 3);
+	//cout << jc1;
+	////upcasting
+	//Jucator& j8 = jc1;
+	//cout <<endl<<j8;
 
-	//supraincarcare operatori Teren
-	cout << "OPERATORI TEREN\n";
-	t1 = t2;
-	Teren t6;
-	cin >> t6;
-	cout << t6;
-	++t6;
-	cout << t6;
-
-	//supraincarcae operatori Minge
-	cout << "OPERATORI MINGE\n";
-	m1 = m2;
-	cout << m1;
-	Minge m6;
-	cin >> m6;
-	cout << m6;
-	++m6;
-	cout << m6;
-
-	//Vector de obiecte Jucator
-	Jucator vectorJ[3];
-	for (int i = 0;i < 3;i++) {
-		cin >> vectorJ[i];
-	}
-	cout << endl;
-	for (int i = 0;i < 3;i++) {
-		cout << vectorJ[i] << endl;
-	}
-
-	//Vector de obiecte Teren
-	Teren vectorT[3];
-	for (int i = 0;i < 3;i++) {
-		cin >> vectorT[i];
-	}
-	cout << endl;
-	for (int i = 0;i < 3;i++) {
-		cout << vectorT[i] << endl;
-	}
-
-	//Vector de obiecte Minge
-	Minge vectorM[3];
-	for (int i = 0;i < 3;i++) {
-		cin >> vectorM[i];
-	}
-	cout << endl;
-	for (int i = 0;i < 3;i++) {
-		cout << vectorM[i] << endl;
-	}
-
-	Jucator matriceJ[2][2];
-	for (int i = 0;i < 2;i++) {
-		for (int j = 0;j < 2;j++) {
-			cin >> matriceJ[i][j];
-		}
-	}
-
-	for (int i = 0;i < 2;i++) {
-		for (int j = 0;j < 2;j++) {
-			cout << matriceJ[i][j];
-			if (j == 1)
-				cout << "--------";
-		}
-		cout << endl;
-	}
-	
-	//implementare Liga
-	Liga l;
-	l.afisareLiga();
-	//supraincarcare << si []
-	cout << "Nr tricoului jucatorului 3:" << l[2];
-	//supraincarcare =
-	Liga l2 = l;
-	cout << l2;
-
+	////implementare clasa TerenEuropean care mosteneteste Teren
+	//TerenEuropean te1;
+	//cout << te1;
+	//upcasting
+	////Teren& t8 = te1;
+	//cout << endl << t8;
 }
